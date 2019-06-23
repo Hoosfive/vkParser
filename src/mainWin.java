@@ -33,15 +33,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.json.*;
 
-class result {
-    String id;
-    String first_name;
-    String last_name;
-    String country;
-    String city;
-    String mobile;
-}
-
 public class mainWin extends JFrame{
 
     private String userID;
@@ -54,8 +45,12 @@ public class mainWin extends JFrame{
     private URL query;
     private HttpURLConnection connection;
     private JSONObject jsonParser;
-
-    private result result;
+    private int id;
+    private String first_name;
+    private String last_name;
+    private String country;
+    private String city;
+    private String mobile;
 
 
 
@@ -63,12 +58,16 @@ public class mainWin extends JFrame{
         this.getContentPane().add(panel1);
         TransportClient transportClient = HttpTransportClient.getInstance();
         vk = new VkApiClient(transportClient);
-        //HttpPost request = new HttpPost("https://oauth.vk.com/authorize?client_id=7029582&redirect_uri=https://oauth.vk.com/blank.html&scope=friends&response_type=token&v=5.95&state=123456")
 
         UserActor actor = new UserActor(155549438, "debc7d22c13b11dc31d1475f1bcbc6926033f32ca19f795f3c77cc0b7fc503fd64694df2b08678c1f84cb");
 
         тыкниЁптаButton.addActionListener(e -> {
             userID = useridField.getText();
+            first_name = null;
+            last_name = null;
+            country = null;
+            city = null;
+            mobile = null;
             String url = ("https://api.vk.com/method/users.get?user_id="+userID +"&fields=country,city,contacts&access_token="+actor.getAccessToken() + "&v=5.95");
             try {
                 query = new URL(url);
@@ -82,42 +81,42 @@ public class mainWin extends JFrame{
                 }
                 in.close();
                 jsonResult = response.toString();
-              //  result = g.fromJson(jsonResult, result.class);
 
-
-                // jsonResult = (Object) new JSONParser().parse(String.valueOf(response));
                 System.out.println(jsonResult);
 
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            try {
-                jsonParser = new JSONObject(jsonResult);
-                //jsonParser =  (JSONObject) jsonResult;
+            jsonParser = new JSONObject(jsonResult);
 // Достаём firstName and lastName 155636030
 
-                JSONArray arr = jsonParser.getJSONArray("response");
+            JSONArray jsonArr = jsonParser.getJSONArray("response");
 
-                        //String id = oneObject.getString("id");
-               // result.id = (arr.getJSONObject(1).getString("id"));
-                result.first_name = (arr.getJSONObject(1).getString("first_name"));
-                result.last_name = (arr.getJSONObject(2).getString("last_name"));
-                /*result.city = (arr.getJSONObject(5).getJSONArray("city").getJSONObject(2).getString("title"));
-                result.country = (arr.getJSONObject(6).getJSONArray("country").getJSONObject(2).getString("title"));
-                result.mobile = (arr.getJSONObject(7).getString("mobile_phone"));*/
-                System.out.println("info: " +  result.first_name + " \n " + result.last_name/*+ " \n "
-                        + result.country+ " \n "+ result.city+ " \n "+ result.*/);
+            try {
+                id = jsonArr.getJSONObject(0).getInt("id");
+                first_name = jsonArr.getJSONObject(0).getString("first_name");
+                last_name = jsonArr.getJSONObject(0).getString("last_name");
+                try {
+                    city = jsonArr.getJSONObject(0  ).getJSONObject("city").getString("title");
+                } catch (JSONException ex) {
 
+                }
+                try {
+                    country = jsonArr.getJSONObject(0  ).getJSONObject("country").getString("title");
+                } catch (JSONException ex) {
+
+                }
+                try {
+                    mobile = jsonArr.getJSONObject(0).getString("mobile_phone");
+                } catch (JSONException ex) {
+
+                }
+                System.out.println("info: " + id + "\n" +  first_name + " \n " + last_name+ " \n "
+                        + city + " \n "+ country + " \n "+ mobile);
             } catch (JSONException ex) {
-                // Oops
-            }/*
-            String id = jsonParser.getJSONObject("responce").getString("id");
-            String first_name = jsonParser.getJSONObject("responce").getString("first_name");
-            String last_name = jsonParser.getJSONObject("responce").getString("last_name");
-            String country = jsonParser.getJSONObject("responce").getJSONObject("country").getString("title");
-            String city = jsonParser.getJSONObject("responce").getString("city");
-            String mobile = jsonParser.getJSONObject("responce").getString("mobile_phone");
-            System.out.println("info: " + id + first_name + " \n " + last_name+ " \n " + country+ " \n "+ city+ " \n "+ mobile);*/
+                System.out.println("info: " + id + "\n" +  first_name + " \n " + last_name+ " \n "
+                        + city + " \n "+ country + " \n "+ mobile);
+            }
         });
     }
 }
