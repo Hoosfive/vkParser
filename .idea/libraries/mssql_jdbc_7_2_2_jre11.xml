@@ -4,9 +4,6 @@
       <root url="jar://C:/Program Files/Microsoft JDBC Driver 7.2 for SQL Server/sqljdbc_7.2/rus/mssql-jdbc-7.2.2.jre11.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <NATIVE>
-      <root url="file://C:/Program Files/Microsoft JDBC Driver 7.2 for SQL Server/sqljdbc_7.2/rus/auth/x64" />
-    </NATIVE>
     <SOURCES />
   </library>
 </component>
