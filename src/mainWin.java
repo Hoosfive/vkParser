@@ -1,9 +1,4 @@
-import com.vk.api.sdk.client.TransportClient;
-import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.UserActor;
-import com.vk.api.sdk.exceptions.ApiException;
-import com.vk.api.sdk.exceptions.ClientException;
-import com.vk.api.sdk.httpclient.HttpTransportClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +22,7 @@ public class mainWin extends JFrame{
     private String jsonResult;
     private JPanel panel1;
     private JTextField userIdField;
-    private JButton clickMeButton;
+    private JButton getMainInfoButton;
     private JTable resultTable;
     private JButton writeButton;
     private JButton testFriendsButton;
@@ -35,7 +30,6 @@ public class mainWin extends JFrame{
     private JButton changeTokenButton;
     private JButton testGroupsButton;
     private URL query;
-    private VkApiClient vk;
     private HttpURLConnection connection;
     private JSONObject jsonParser;
     private String first_name;
@@ -44,10 +38,10 @@ public class mainWin extends JFrame{
     private String city;
     private String mobile;
     private String photo;
-    private String connectionUrl = "jdbc:sqlserver://SOMEDEVICE\\MSSQLSERVERTRUE;databaseName=usersInfo;integratedSecurity=true;";
+    private String connectionUrl = "jdbc:sqlserver://SOMEDEVICE;databaseName=usersInfo;integratedSecurity=true;";
     String querySql;
     // ************************* Впиши после запятой ниже токен, либо потом нажми в проге кнопку changeToken
-    UserActor actor = new UserActor(155549438, "f19b1ffc26936f6ec4d3c012bc2cb71d8fbb67598b0d7378641d38a5176080152927d5684de2aeac04f47");
+    UserActor actor = new UserActor(, "");
 
     private Statement statement = null;
     private Connection connect;
@@ -62,21 +56,35 @@ public class mainWin extends JFrame{
 
     mainWin() {
         this.getContentPane().add(panel1);
-        TransportClient transportClient = HttpTransportClient.getInstance();
-        vk = new VkApiClient(transportClient);
         model.setColumnIdentifiers(columnNames);
         resultTable.setModel(model);
-        clickMeButton.addActionListener(e -> {
-            userID = Integer.parseInt(userIdField.getText());
-            first_name = null;
-            last_name = null;
-            country = null;
-            city = null;
-            mobile = null;
-            String url = ("https://api.vk.com/method/users.get?user_id="+userID +"&fields=country,city,contacts,photo_200&access_token="+actor.getAccessToken() + "&v=5.103 ");
-            getResponse(url);
-            jsonParser = (new JSONObject(jsonResult)).getJSONArray("response").getJSONObject(0);
+        getMainInfoButton.addActionListener(e -> getMainInfo());
+        writeButton.addActionListener(e -> {
+            // Подключение к базе данных
+            connectDB();
+            queriesList.forEach(this::dbQueriesExecute);
+            friendsList.forEach(this::dbQueriesExecute);
+            videosList.forEach(this::dbQueriesExecute);
+            groupsList.forEach(this::dbQueriesExecute);
+            disconnectDB();
+            queriesList.clear();
+            friendsList.clear();
+            videosList.clear();
+            groupsList.clear();
+            model.addRow(new String[]{"All rows before", "has been written!"});
+        });
+        testFriendsButton.addActionListener(e -> parseFriends());
+        testVideosButton.addActionListener(e -> parseVideos());
+        changeTokenButton.addActionListener(e -> changeToken("Enter token"));
+        testGroupsButton.addActionListener(e -> parseGroups());
+    }
 
+    private void getMainInfo() {
+        userID = Integer.parseInt(userIdField.getText());
+        String mainInfoRequest = ("https://api.vk.com/method/users.get?user_id="+userID +"&fields=country,city,contacts,photo_200&access_token="+actor.getAccessToken() + "&v=5.103 ");
+        getResponse(mainInfoRequest);
+        try {
+            jsonParser = (new JSONObject(jsonResult)).getJSONArray("response").getJSONObject(0);
             mobile = checkIsNull("mobile_phone",null);
             first_name = checkIsNull("first_name",null);
             last_name = checkIsNull("last_name",null);
@@ -89,62 +97,23 @@ public class mainWin extends JFrame{
             querySql = ("insert into records (userID,userName,userSurname,userCountry,userCity,userPhone,photoLink) values " +
                     "("+"'"+userID+"'"+","+"'"+first_name+"'"+","+"'"+last_name+"'"+","+"'"+country+"'"+","+"'"+city+"'"+","+"'"+mobile+"'"+","+"'"+photo+"'"+");");
             queriesList.addElement(querySql);
-        });
-
-        writeButton.addActionListener(e -> {
-            // Подключение к базе данных
-            connectDB();
-            queriesList.forEach((element) -> {
-                try {
-                    statement.executeUpdate(element);
-                    System.out.println(element);
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                    System.out.println("write main info in db exception");
-                }
-            });
-            friendsList.forEach((element) -> {
-                try {
-                    statement.executeUpdate(element);
-                    System.out.println(element);
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                    System.out.println("write friends  in db exception");
-                }
-            });
-            videosList.forEach((element) -> {
-                try {
-                    statement.executeUpdate(element);
-                    System.out.println(element);
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                    System.out.println("write videos in db exception");
-                }
-            });
-            groupsList.forEach((element) -> {
-                try {
-                    statement.executeUpdate(element);
-                    System.out.println(element);
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                    System.out.println("write groups in db exception");
-                }
-            });
-            disconnectDB();
-            queriesList.clear();
-            friendsList.clear();
-            videosList.clear();
-            groupsList.clear();
-            model.addRow(new String[]{"All rows before", "has been writed!"});
-
-
-        });
-        testFriendsButton.addActionListener(e -> parseFriends());
-        testVideosButton.addActionListener(e -> parseVideos());
-        changeTokenButton.addActionListener(e -> changeToken());
-        testGroupsButton.addActionListener(e -> parseGroups());
+        } catch (JSONException je)
+        {
+            je.printStackTrace();
+            changeToken("Something wrong with token");
+        }
     }
 
+    private void dbQueriesExecute(String element)
+    {
+        try {
+            statement.executeUpdate(element);
+            System.out.println(element);
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+            System.out.println("write in db exception");
+        }
+    }
     private String checkIsNull(String field, String parentObject)
     {
         try {
@@ -261,8 +230,8 @@ public class mainWin extends JFrame{
             }
             in.close();
             jsonResult = response.toString();
-        } catch (IOException e1) {
-            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     private void parseGroups()
@@ -284,14 +253,13 @@ public class mainWin extends JFrame{
         }
         groupsList.forEach(System.out::println);
     }
-    private void changeToken()
+    private void changeToken(String title)
     {
         String token = JOptionPane.showInputDialog(null,
                 new String[]{"Enter your access token:", "You can get it on vkhost.github.io"},
-                "Enter token",
+                title,
                 JOptionPane.WARNING_MESSAGE);
         actor = new UserActor(actor.getId(),token);
     }
-
 }
 

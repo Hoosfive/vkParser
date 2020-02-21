@@ -16,7 +16,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="19413" class="javax.swing.JButton" binding="clickMeButton">
+      <component id="19413" class="javax.swing.JButton" binding="getMainInfoButton">
         <constraints>
           <grid row="1" column="0" row-span="2" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
