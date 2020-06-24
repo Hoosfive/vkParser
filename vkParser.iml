@@ -16,5 +16,10 @@
     <orderEntry type="library" exported="" name="mssql-jdbc-7.2.2.jre11" level="project" />
     <orderEntry type="library" exported="" name="org.openjfx:javafx-controls:11.0.1" level="project" />
     <orderEntry type="library" name="com.google.code.gson:gson:2.8.1" level="project" />
+    <orderEntry type="library" name="org.codehaus.jackson:jackson-mapper-asl:1.9.9" level="project" />
+    <orderEntry type="library" name="org.apache.poi:poi:4.1.1" level="project" />
+    <orderEntry type="library" name="org.apache.poi:poi-ooxml:4.1.1" level="project" />
+    <orderEntry type="library" name="org.postgresql:pgjdbc-benchmark:42.2.2" level="project" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>

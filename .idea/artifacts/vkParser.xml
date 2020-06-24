@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="vkParser">
+  <artifact type="javafx" build-on-make="true" name="vkParser">
     <output-path>$PROJECT_DIR$/out/artifacts/vkParser</output-path>
     <properties id="javafx-properties">
       <options>
