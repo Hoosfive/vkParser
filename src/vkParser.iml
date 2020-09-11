@@ -12,14 +12,12 @@
     <orderEntry type="library" exported="" name="org.apache.logging.log4j:log4j-slf4j-impl:2.7" level="project" />
     <orderEntry type="library" exported="" name="org.apache.logging.log4j:log4j-api:2.7" level="project" />
     <orderEntry type="library" exported="" name="org.slf4j:slf4j-jdk14:1.7.22" level="project" />
-    <orderEntry type="library" exported="" name="org.json:json:20180813" level="application" />
     <orderEntry type="library" exported="" name="mssql-jdbc-7.2.2.jre11" level="project" />
     <orderEntry type="library" exported="" name="org.openjfx:javafx-controls:11.0.1" level="project" />
-    <orderEntry type="library" name="com.google.code.gson:gson:2.8.1" level="project" />
-    <orderEntry type="library" name="org.codehaus.jackson:jackson-mapper-asl:1.9.9" level="project" />
     <orderEntry type="library" name="org.apache.poi:poi:4.1.1" level="project" />
     <orderEntry type="library" name="org.apache.poi:poi-ooxml:4.1.1" level="project" />
     <orderEntry type="library" name="org.postgresql:pgjdbc-benchmark:42.2.2" level="project" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" name="org.json:json:20180813" level="project" />
   </component>
 </module>
